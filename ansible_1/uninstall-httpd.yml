@@ -1,0 +1,21 @@
+- name: Playbook uninstall httpd
+  hosts: all
+  remote_user: root
+  vars:
+    dest_file: /var/www/html/index.html
+  tasks:
+  - name: install httpd
+    yum:
+      name: httpd
+      state: absent
+  - name: delete index.html
+    file:
+      path: "{{dest_file}}"
+      state: absent
+  - name: Disable ports in firewalld
+    ansible.posix.firewalld:
+      port: "{{ item }}"
+      state: disabled
+    with_items:
+      - 80/tcp
+      - 443/tcp
