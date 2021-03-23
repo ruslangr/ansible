@@ -1,0 +1,32 @@
+---
+- name: Playbook install & configure httpd
+  hosts: all
+  remote_user: root
+  vars:
+    source_file: ./index.html
+    dest_file: /var/www/html/index.html 
+  tasks:
+  - name: install httpd
+    yum:
+      name: httpd
+      state: latest
+  - name: Start and enable httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+  - name: Copy index.html
+    copy: src={{ source_file }} dest={{ dest_file }}
+  - name: Enable & start firewalld
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+  - name: Enable ports in firewalld
+    ansible.posix.firewalld:
+      port: "{{ item }}"
+      state: enabled
+    with_items:
+      - 80/tcp
+      - 443/tcp
+
