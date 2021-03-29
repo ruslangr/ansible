@@ -1,0 +1,8 @@
+---
+- name: Playbook install & configure httpd
+  hosts: all
+  remote_user: root
+  
+  roles: 
+  - deploy_apache_web
+

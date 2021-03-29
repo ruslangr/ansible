@@ -17,6 +17,7 @@
       enabled: yes
   - name: Copy index.html
     copy: src={{ source_file }} dest={{ dest_file }}
+    notify: Restart httpd
   - name: Enable & start firewalld
     service:
       name: firewalld
@@ -29,4 +30,9 @@
     with_items:
       - 80/tcp
       - 443/tcp
+  handlers:
+    - name: Restart httpd
+      service:
+        name: httpd
+        state: restarted
 

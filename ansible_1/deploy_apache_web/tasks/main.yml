@@ -1,0 +1,26 @@
+---
+# tasks file for deploy_apache_web
+- name: install httpd
+  yum:
+    name: httpd
+    state: latest
+- name: Start and enable httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+- name: Copy index.html
+  copy: src=index.html dest={{ dest_file }}
+  notify: Restart httpd
+- name: Enable & start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+- name: Enable ports in firewalld
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    state: enabled
+  with_items:
+    - 80/tcp
+    - 443/tcp
