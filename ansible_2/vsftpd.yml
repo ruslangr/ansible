@@ -1,0 +1,42 @@
+---
+- name: Playbook install & configure vsftpd
+  hosts: all
+  remote_user: root
+  vars:
+    anonymous_enable: yes
+    local_enable: yes
+    write_enable: yes
+    anon_upload_enable: yes
+  tasks:
+    - name: Install vsftpd
+      yum:
+        name: vsftpd
+        state: latest
+    - name: Enable vsftpd
+      service:
+        name: vsftpd
+        enabled: yes
+    - name: Configure vsftpd
+      template:
+        src: vsftpd.j2
+        dest: /etc/vsftpd/vsftpd.conf
+      notify:
+      - Restart vsftpd
+    - name: Restart vsftpd
+      service:
+        name: vsftpd
+        state: restarted
+    - name: Chown /var/ftp/pub
+      file:
+        path: /var/ftp/pub
+        owner: ftp
+        group: ftp
+        mode: '0755'
+    - name: Install policycoreutils-python-utils for semanage
+      yum:
+        name: policycoreutils-python-utils
+        state: latest
+    - name: set ftpd_anon_write on
+      ansible.posix.seboolean:
+        name: ftpd_anon_write         
+        state: yes
