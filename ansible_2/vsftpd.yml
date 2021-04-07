@@ -16,16 +16,13 @@
       service:
         name: vsftpd
         enabled: yes
+        state: started
     - name: Configure vsftpd
       template:
         src: vsftpd.j2
         dest: /etc/vsftpd/vsftpd.conf
       notify:
       - Restart vsftpd
-    - name: Restart vsftpd
-      service:
-        name: vsftpd
-        state: restarted
     - name: Chown /var/ftp/pub
       file:
         path: /var/ftp/pub
@@ -37,6 +34,12 @@
         name: policycoreutils-python-utils
         state: latest
     - name: set ftpd_anon_write on
-      ansible.posix.seboolean:
-        name: ftpd_anon_write         
+      seboolean:
+        name: ftpd_anon_write
         state: yes
+
+  handlers:
+    - name: Restart vsftpd
+      service:
+        name: vsftpd
+        state: restarted

@@ -6,17 +6,11 @@
     service:
       name: NetworkManager
       state: stopped
-    notify: 
-     - start NetworkManager
+      enabled: no
   - name: change configure GRUB
-    ansible.builtin.lineinfile:
+    lineinfile:
       path: /etc/default/grub
       regexp: '^GRUB_CMDLINE'
-      line: 'GRUB_CMDLINE_LINUX="no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 elevator=noop"' 
+      line: 'GRUB_CMDLINE_LINUX="no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 elevator=noop"'
   - name: run grub2-mkconfig
-    ansible.builtin.shell: grub2-mkconfig /etc/default/grub
-  handlers:
-    - name: start NetworkManager
-      service: 
-        name: NetworkManager
-        state: started
+    shell: grub2-mkconfig /etc/default/grub
