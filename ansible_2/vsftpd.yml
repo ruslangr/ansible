@@ -37,6 +37,14 @@
       seboolean:
         name: ftpd_anon_write
         state: yes
+    - name: Enable ports in firewalld
+      firewalld:
+        port: "{{ item }}"
+        state: enabled
+        permanent: yes
+        immediate: yes
+      with_items:
+        - 21/tcp
 
   handlers:
     - name: Restart vsftpd
